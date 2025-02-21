@@ -1,7 +1,7 @@
 # Unit tests for HasDuplicates class
 import unittest
 
-from algo_one import HasDuplicates
+from hasDuplicates import HasDuplicates
 
 class TestHasDuplicates(unittest.TestCase):
     def setUp(self):
