@@ -1,3 +1,6 @@
+import process from "node:process";
+import { createInterface } from "node:readline";
+
 class CoinChange {
   bruteForce(coins: number[], amount: number): number {
     if (amount === 0) {
@@ -6,9 +9,9 @@ class CoinChange {
     if (amount < 0) {
       return -1;
     }
-    let res = amount + 1;
+    let res: number = amount + 1;
     for (const coin of coins) {
-      const subRes = this.bruteForce(coins, amount - coin);
+      const subRes: number = this.bruteForce(coins, amount - coin);
       if (subRes >= 0) {
         res = Math.min(res, 1 + subRes);
       }
@@ -26,9 +29,9 @@ class CoinChange {
       if (a < 0) {
         return a;
       }
-      let res = a + 1;
+      let res: number = a + 1;
       for (const coin of coins) {
-        const subRes = dp(a - coin);
+        const subRes: number = dp(a - coin);
         if (subRes >= 0) {
           res = Math.min(res, 1 + subRes);
         }
@@ -41,23 +44,30 @@ class CoinChange {
   }
 }
 
-async function readLine(prompt: string): Promise<string> {
-  const buf = new Uint8Array(1024);
-  await Deno.stdout.write(new TextEncoder().encode(prompt));
-  const n = await Deno.stdin.read(buf);
-  if (n === null) return "";
-  return new TextDecoder().decode(buf.subarray(0, n)).trim();
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function question(prompt: string): Promise<string> {
+  return new Promise((resolve) => {
+    rl.question(prompt, (answer: string) => {
+      resolve(answer);
+    });
+  });
 }
 
 async function getInput(): Promise<[number[], number]> {
-  const coinsInput = await readLine(
+  const coinsInput: string = await question(
     "Enter coin denominations (space-separated): ",
   );
-  const coins = coinsInput.split(" ").map((c) => parseInt(c, 10));
+  const coins: number[] = coinsInput.split(" ").map((c) => parseInt(c, 10));
 
-  let amount = 0;
+  let amount: number = 0;
   while (true) {
-    const amountInput = await readLine("Enter amount to make change for: ");
+    const amountInput: string = await question(
+      "Enter amount to make change for: ",
+    );
     if (/^\d+$/.test(amountInput)) {
       amount = parseInt(amountInput, 10);
       break;
@@ -69,16 +79,17 @@ async function getInput(): Promise<[number[], number]> {
   return [coins, amount];
 }
 
-async function main() {
-  const coinChange = new CoinChange();
+async function main(): Promise<void> {
+  const coinChange: CoinChange = new CoinChange();
 
   const processMethod = async (): Promise<void> => {
-    const method = await readLine(
+    const method: string = await question(
       "Choose method ('brute', 'memo' or 'exit'): ",
     );
-    const methodLower = method.trim().toLowerCase();
+    const methodLower: string = method.trim().toLowerCase();
 
     if (methodLower === "exit") {
+      rl.close();
       return;
     }
 
@@ -88,7 +99,7 @@ async function main() {
     }
 
     try {
-      const [coins, amount] = await getInput();
+      const [coins, amount]: [number[], number] = await getInput();
 
       let result: number;
       if (methodLower === "brute") {
@@ -102,7 +113,7 @@ async function main() {
       } else {
         console.log(`Minimum coins needed: ${result}`);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("An error occurred:", error);
     }
 
