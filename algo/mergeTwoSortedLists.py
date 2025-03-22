@@ -1,5 +1,4 @@
 from typing import Optional
-
 from tests.test_reverseList import ListNode
 
 
