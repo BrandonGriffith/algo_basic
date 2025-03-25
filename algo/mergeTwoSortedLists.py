@@ -1,7 +1,6 @@
 from typing import Optional
 from tests.test_reverseList import ListNode
 
-
 class MergeTwoSortedLists:
     def iteration(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
         mList = node = ListNode()
